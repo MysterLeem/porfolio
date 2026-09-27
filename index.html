@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JP Digital Services — Build your brand on social media platforms</title>
+
+<!-- Fonts: Oswald = bold signage-style headings, Inter = body text -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Mermaid renders the automation diagram in Section 5 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+
+<style>
+/* =========================================================
+   1) DESIGN TOKENS — edit colors/fonts here, everything else follows
+   ========================================================= */
+:root{
+  /* light theme (default) */
+  --bg:#EDE7D9;         /* page background, warm paper */
+  --bg-elev:#E4DCC8;    /* section band background */
+  --card:#F6F2E7;       /* card background */
+  --text:#1B1B1D;       /* body text */
+  --muted:#5B564C;      /* secondary text */
+  --line:rgba(27,27,29,.14);
+  --red:#A5342A;        /* barber-pole red, muted */
+  --brass:#9C6B24;      /* accent, moto chrome/brass */
+  --steel:#4B5157;      /* accent, steel/asphalt */
+  --font-head:'Oswald',Impact,'Arial Narrow',sans-serif;
+  --font-body:'Inter',-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#18181A; --bg-elev:#201F1D; --card:#221F1B;
+    --text:#F1EEE6; --muted:#B7B1A3; --line:rgba(241,238,230,.14);
+    --red:#C24B3D; --brass:#C79A4B; --steel:#8A9198;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#18181A; --bg-elev:#201F1D; --card:#221F1B;
+  --text:#F1EEE6; --muted:#B7B1A3; --line:rgba(241,238,230,.14);
+  --red:#C24B3D; --brass:#C79A4B; --steel:#8A9198;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth; scroll-padding-top:calc(72px + env(safe-area-inset-top,0px));}
+body{
+  margin:0; background:var(--bg); color:var(--text); font-family:var(--font-body);
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  line-height:1.55;
+}
+h1,h2,h3{font-family:var(--font-head); font-weight:600; letter-spacing:.2px; margin:0 0 .5em;}
+p{margin:0 0 1em; color:var(--muted); max-width:62ch;}
+a{color:inherit;}
+.wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+section{padding:88px 0; border-bottom:1px solid var(--line);}
+section:last-of-type{border-bottom:none;}
+
+/* -------- NAV -------- */
+nav{
+  position:sticky; top:0; z-index:50;
+  padding-top:env(safe-area-inset-top,0px);
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.navrow{display:flex; align-items:center; justify-content:space-between; height:64px; gap:16px;}
+.brand{font-family:var(--font-head); font-size:1.15rem; font-weight:700; white-space:nowrap;}
+.brand .dot{color:var(--red);}
+.navlinks{display:flex; gap:22px; overflow-x:auto; scrollbar-width:none;}
+.navlinks::-webkit-scrollbar{display:none;}
+.navlinks a{
+  font-size:.92rem; text-decoration:none; color:var(--muted); white-space:nowrap;
+  padding:6px 2px; border-bottom:2px solid transparent;
+}
+.navlinks a:hover, .navlinks a:focus-visible{color:var(--text); border-color:var(--red);}
+
+/* -------- HERO / SECTION 1 -------- */
+.hero h1{font-size:clamp(2rem,5vw,3.2rem); max-width:16ch;}
+.hero p.lead{font-size:1.15rem; max-width:52ch;}
+.audience{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:36px;}
+@media (max-width:640px){.audience{grid-template-columns:1fr;}}
+.aud-card{
+  background:var(--card); border:1px solid var(--line); border-radius:10px; padding:24px;
+}
+.aud-card h3{font-size:1.1rem; display:flex; align-items:center; gap:10px;}
+.badge{width:34px; height:34px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center;}
+.badge.barber{background:repeating-linear-gradient(45deg, var(--red) 0 6px, #fff 6px 12px, var(--steel) 12px 18px);}
+.badge.moto{background:var(--steel); position:relative;}
+.badge.moto::after{content:"⚙"; color:var(--bg); font-size:16px;}
+
+/* -------- SECTION 2: WHAT I DO -------- */
+.services{display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:8px;}
+@media (max-width:640px){.services{grid-template-columns:1fr;}}
+.svc{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:22px;}
+.svc h3{font-size:1.05rem; color:var(--text); margin-bottom:.35em;}
+.svc .tag{display:inline-block; font-size:.75rem; color:var(--brass); margin-bottom:10px;}
+
+/* -------- SECTION 3: CASE STUDIES -------- */
+.cases{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+@media (max-width:760px){.cases{grid-template-columns:1fr;}}
+.case-card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:26px;}
+.case-card h3{font-size:1.2rem;}
+.case-card .niche{font-size:.8rem; color:var(--muted); margin-bottom:14px;}
+.case-card ul{margin:0; padding-left:20px; color:var(--muted);}
+.case-card li{margin-bottom:8px;}
+
+/* -------- SECTION 4: SOLUTIONS + MOCKUPS -------- */
+.sol-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:32px; align-items:start;}
+@media (max-width:760px){.sol-grid{grid-template-columns:1fr;}}
+.sol-list{list-style:none; margin:0; padding:0;}
+.sol-list li{padding:14px 0; border-top:1px solid var(--line);}
+.sol-list li:first-child{border-top:none;}
+.sol-list b{color:var(--text); display:block; margin-bottom:2px;}
+
+/* phone mockup = stand-in for a Canva design example, built in CSS only */
+.phone{width:220px; border-radius:26px; background:var(--steel); padding:10px; margin:0 auto 22px;}
+.phone .screen{background:var(--bg); border-radius:18px; overflow:hidden;}
+.phone .post{aspect-ratio:1/1; position:relative; display:flex; align-items:flex-end;}
+.phone .post.p1{background:linear-gradient(135deg, var(--red), var(--steel));}
+.phone .post.p2{background:linear-gradient(135deg, var(--brass), #2b2b2b);}
+.phone .post-label{background:rgba(0,0,0,.55); color:#fff; font-family:var(--font-head); font-size:.85rem; padding:8px 12px; width:100%;}
+.phone .caption{padding:10px 12px; font-size:.75rem; color:var(--muted);}
+.mockups{display:flex; flex-direction:column;}
+.mockup-tag{text-align:center; font-size:.78rem; color:var(--muted); margin-top:-12px; margin-bottom:26px;}
+
+/* -------- SECTION 5: AUTOMATION -------- */
+.mermaid{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; overflow-x:auto;}
+
+/* -------- SECTION 6: PACKAGES -------- */
+.packages{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+@media (max-width:860px){.packages{grid-template-columns:1fr;}}
+.pkg{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:26px; display:flex; flex-direction:column;}
+.pkg.feat{border-color:var(--red); box-shadow:0 0 0 1px var(--red);}
+.pkg h3{font-size:1.15rem;}
+.pkg .price{font-family:var(--font-head); font-size:1.8rem; margin:6px 0 16px;}
+.pkg .price span{font-size:.9rem; color:var(--muted); font-family:var(--font-body);}
+.pkg ul{list-style:none; margin:0 0 22px; padding:0; color:var(--muted); font-size:.92rem; flex:1;}
+.pkg li{padding:7px 0; border-top:1px solid var(--line);}
+.pkg li:first-child{border-top:none;}
+.cta{
+  display:inline-block; text-align:center; text-decoration:none; padding:12px 16px;
+  border-radius:8px; background:var(--red); color:#fff; font-weight:600; font-size:.92rem;
+}
+.pkg:not(.feat) .cta{background:transparent; color:var(--text); border:1px solid var(--line);}
+
+footer{padding:48px 0; text-align:center; color:var(--muted); font-size:.85rem;}
+
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     NAV — 6 links match the 6 sections below by id
+     ========================================================= -->
+<nav>
+  <div class="wrap navrow">
+    <div class="brand">JP Digital Services<span class="dot">.</span></div>
+    <div class="navlinks">
+      <a href="#who">Who I Help</a>
+      <a href="#what">What I Do</a>
+      <a href="#cases">Case Studies</a>
+      <a href="#solutions">Solutions</a>
+      <a href="#automation">Automation</a>
+      <a href="#packages">Packages</a>
+    </div>
+  </div>
+</nav>
+
+<!-- =========================================================
+     SECTION 1 — WHO I HELP
+     ========================================================= -->
+<section id="who" class="hero">
+  <div class="wrap">
+    <h1>Barbershops and motorcycle shops, run by people too busy working to run their Instagram.</h1>
+    <p class="lead">I help hands-on, appointment-and-walk-in businesses turn everyday work — fades, tune-ups, custom builds — into content that brings new customers through the door.</p>
+    <div class="audience">
+      <div class="aud-card">
+        <h3><span class="badge barber"></span>Barbershops & salons</h3>
+        <!-- EDIT: swap this copy for your actual client type if it differs -->
+        <p>Owner-operators and small shops who are great at the chair but don't have time to post, and whose feed doesn't match how good the work actually is.</p>
+      </div>
+      <div class="aud-card">
+        <h3><span class="badge moto"></span>Motorcycle shops</h3>
+        <p>Repair, customization and parts shops sitting on great build stories and workshop footage that never makes it online.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SECTION 2 — WHAT I DO
+     ========================================================= -->
+<section id="what" style="background:var(--bg-elev)">
+  <div class="wrap">
+    <h2>What I do</h2>
+    <p>Four pieces that work together, or on their own if that's what a shop needs.</p>
+    <div class="services">
+      <div class="svc">
+        <span class="tag">Strategy</span>
+        <h3>Content planning</h3>
+        <p>A simple monthly calendar built around what's already happening in the shop — no scrambling for ideas.</p>
+      </div>
+      <div class="svc">
+        <span class="tag">Design</span>
+        <h3>Canva templates & posts</h3>
+        <p>Branded, reusable Canva templates for before/afters, promos, and reels covers, made once and reused every week.</p>
+      </div>
+      <div class="svc">
+        <span class="tag">Systems</span>
+        <h3>Scheduling & automation</h3>
+        <p>Posts, captions and first-comment links go out on schedule without anyone touching a phone mid-service.</p>
+      </div>
+      <div class="svc">
+        <span class="tag">Growth</span>
+        <h3>Reporting & optimizing</h3>
+        <p>A short monthly look at what worked, so the plan gets sharper instead of repeating guesswork.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SECTION 3 — CASE STUDIES (common problems per niche)
+     ========================================================= -->
+<section id="cases">
+  <div class="wrap">
+    <h2>Case study: two niches, familiar problems</h2>
+    <p>Patterns I see over and over in these two industries — and exactly where social media skills apply.</p>
+    <div class="cases">
+      <div class="case-card">
+        <h3>Barbershop</h3>
+        <div class="niche">Common social media problems</div>
+        <ul>
+          <!-- EDIT: replace with problems from your own client research/interviews -->
+          <li>Posting is random — busy weeks mean total silence on the feed</li>
+          <li>Phone photos of finished cuts, no consistent look or template</li>
+          <li>No booking link visible in bio or story highlights</li>
+          <li>Before/after transformations rarely get shown side by side</li>
+          <li>No local hashtags or geo-tags, so nearby customers don't find them</li>
+        </ul>
+      </div>
+      <div class="case-card">
+        <h3>Motorcycle shop</h3>
+        <div class="niche">Common social media problems</div>
+        <ul>
+          <li>Build process and repair work never gets filmed, only the final result</li>
+          <li>Almost no reels — the format riders actually watch and share</li>
+          <li>Inconsistent branding between posts, story, and shop signage</li>
+          <li>No clear call-to-action for booking service or asking about parts</li>
+          <li>Little engagement with local rider groups and events</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SECTION 4 — SOLUTIONS + EXAMPLES (Canva-style mockups)
+     ========================================================= -->
+<section id="solutions" style="background:var(--bg-elev)">
+  <div class="wrap">
+    <h2>Solutions & examples</h2>
+    <div class="sol-grid">
+      <ul class="sol-list">
+        <!-- EDIT: keep these paired 1-to-1 with the problems in Section 3 -->
+        <li><b>Weekly content batching</b>A single afternoon each week to shoot and schedule everything, so posting never depends on a slow day.</li>
+        <li><b>Branded Canva template set</b>One before/after layout, one promo layout, one reel cover — same fonts and colors every time.</li>
+        <li><b>Link-in-bio + highlight covers</b>Booking link always visible, plus highlights for pricing, hours, and past work.</li>
+        <li><b>Short-form build videos</b>15–30 second clips of real work in progress, edited from footage shot during the job.</li>
+        <li><b>Local tagging & community posts</b>Geo-tags, area hashtags, and shout-outs to local riders or regulars.</li>
+      </ul>
+      <!-- <div class="mockups">
+        <div class="phone">
+          <div class="screen">
+            <div class="post p1">
+              <div class="post-label">BEFORE / AFTER — FADE</div>
+            </div>
+          </div>
+        </div>
+        <div class="mockup-tag">Example: barbershop before/after template</div>
+        <div class="phone">
+          <div class="screen">
+            <div class="post p2">
+              <div class="post-label">BUILD LOG — WK 03</div>
+            </div>
+          </div>
+        </div>
+        <div class="mockup-tag">Example: motorcycle build-log reel cover</div>
+      </div>-->
+    </div>
+  </div> 
+</section>
+
+<!-- =========================================================
+     SECTION 5 — AUTOMATION WORKFLOW
+     ========================================================= -->
+<section id="automation">
+  <div class="wrap">
+    <h2>Automation workflow</h2>
+    <p>How content moves from an idea in the shop to a scheduled post, with no daily manual work.</p>
+    <!-- EDIT: adjust the steps/tools below to match your actual stack -->
+    <pre class="mermaid">
+flowchart LR
+    A[Shoot on shop phone] --> B[Batch in Canva]
+    B --> C[Load into scheduler]
+    C --> D[Auto-post to IG / FB]
+    D --> E[Auto first-comment: booking link]
+    E --> F[Monthly report]
+    F --> A
+    </pre>
+  </div>
+</section>
+
+<!-- =========================================================
+     SECTION 6 — PACKAGES
+     ========================================================= -->
+<section id="packages" style="background:var(--bg-elev)">
+  <div class="wrap">
+    <h2>Packages</h2>
+    <p>Three starting points — every shop's needs get scoped before we lock in a price.</p>
+    <!-- EDIT: prices, names and inclusions below are placeholders -->
+    <div class="packages">
+      <div class="pkg">
+        <h3>STARTER</h3>
+        <div class="price">₱500 <span>/ mo</span></div>
+        <ul>
+          <li>8 Posts</li>
+          <li>2 Short Videos</li>
+          <li>Captions</li>
+          <li>Content Calendar</li>
+        </ul>
+        <a class="cta" href="mailto:lim2025only@gmail.com">Book a call</a>
+      </div>
+      <div class="pkg feat">
+        <h3>GROWTH</h3>
+        <div class="price">₱1,500 <span>/ mo</span></div>
+        <ul>
+          <li>12 Posts</li>
+          <li>4 Short Videos</li>
+          <li>Lead Tracker</li>
+          <li>Basic inquiry workflow</li>
+          <li>Monthly Report</li>
+        </ul>
+        <a class="cta" href="mailto:lim2025only@gmail.com">Book a call</a>
+      </div>
+      <div class="pkg">
+        <h3>AUTOMATION</h3>
+        <div class="price"> ₱3,500 <span>/ mo</span></div>
+        <ul>
+          <li>12 Posts</li>
+          <li>6 Short Videos</li>
+          <li>Lead / Order System</li>
+          <li>Automation</li>
+          <li>Notifications</li>
+          <li>Follow-Up</li>
+          <li>Maintenance</li>
+        </ul>
+        <a class="cta" href="mailto:lim2025only@gmail.com">Book a call</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <!-- EDIT: your real contact details / socials -->
+    John Paul Lim · lim2025only@gmail.com
+  </div>
+</footer>
+
+<script>
+  mermaid.initialize({ startOnLoad:true, securityLevel:'loose', theme:'base' });
+</script>
+
+<!--claude-mermaid-runtime-begin:3477-->
+<style>.mermaid-diagram{margin-block:4px}.mermaid-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}</style>
+<script src="/_runtime/mermaid-11.16.1.min.js"></script>
+<script>(function(){
+var CFG={"palettes":{"light":{"surface":"#f4efe4","text":"#42392e","line":"#8a7f6d","border":"#7a6c52","bg":"#fffdf8"},"dark":{"surface":"#262b34","text":"#f2f3f5","line":"#a8adb8","border":"#9aa4b8","bg":"#1f232b"}}};
+if(typeof mermaid==='undefined')return;
+var pres=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid')).filter(function(p){if(p.hasAttribute('data-claude-mermaid-claimed'))return false;p.setAttribute('data-claude-mermaid-claimed','1');return true;});
+if(!pres.length)return;
+var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+var root=document.documentElement;
+var items=pres.map(function(pre){
+var mount=document.createElement('div');mount.className='mermaid-diagram';
+return {pre:pre,mount:mount,src:pre.textContent||''};
+});
+var seq=0;
+var renderGen=0;
+var lastKey='';
+function pageBg(fallback){
+var els=[document.body,document.documentElement];
+for(var i=0;i<els.length;i++){
+var c=els[i]&&getComputedStyle(els[i]).backgroundColor;
+if(c&&c!=='transparent'&&c!=='rgba(0, 0, 0, 0)')return c;
+}
+return fallback;
+}
+function render(){
+var theme=root.getAttribute('data-theme');
+var dark=theme==='dark'||(!!(mq&&mq.matches)&&theme!=='light');
+var pal=dark?CFG.palettes.dark:CFG.palettes.light;
+var bg=pageBg(pal.bg);
+var key=(dark?'d':'l')+'|'+bg;
+if(key===lastKey)return;
+lastKey=key;
+var gen=++renderGen;
+var font=getComputedStyle(document.body).fontFamily||'sans-serif';
+var nat={useMaxWidth:false};
+mermaid.initialize({
+startOnLoad:false,securityLevel:'strict',theme:'base',
+flowchart:nat,sequence:nat,er:nat,state:nat,class:nat,pie:nat,
+gantt:nat,journey:nat,timeline:nat,gitGraph:nat,mindmap:nat,xyChart:nat,
+quadrantChart:nat,sankey:nat,c4:nat,requirement:nat,block:nat,
+packet:nat,kanban:nat,architecture:nat,radar:nat,
+themeVariables:{background:bg,mainBkg:pal.surface,primaryColor:pal.surface,
+primaryTextColor:pal.text,lineColor:pal.line,primaryBorderColor:pal.border,
+nodeBorder:pal.border,clusterBorder:pal.border,edgeLabelBackground:bg,
+clusterBkg:'rgba(127,127,127,0.07)',titleColor:pal.text,
+darkMode:dark,rowOdd:bg,rowEven:'rgba(127,127,127,0.07)',
+attributeBackgroundColorOdd:bg,attributeBackgroundColorEven:'rgba(127,127,127,0.07)',
+fontSize:'16px',fontFamily:font},
+themeCSS:'.node rect, .node circle, .node polygon, .node path, .cluster rect { stroke-width: 2px; }'
+});
+items.forEach(function(it){
+var id='claude-mermaid-'+seq++;
+mermaid.render(id,it.src).then(function(r){
+if(gen!==renderGen)return;
+var prev=it.pre.previousElementSibling;
+if(prev&&prev.className==='mermaid-diagram'&&prev!==it.mount)return;
+it.mount.innerHTML=r.svg;
+if(!it.mount.parentNode)it.pre.parentNode.insertBefore(it.mount,it.pre);
+it.pre.style.display='none';
+},function(){
+var scratch=document.getElementById(id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+scratch=document.getElementById('d'+id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+if(gen!==renderGen)return;
+if(it.mount.parentNode)it.mount.parentNode.removeChild(it.mount);
+it.pre.style.display='';
+});
+});
+}
+render();
+if(mq&&mq.addEventListener)mq.addEventListener('change',render);
+if(typeof MutationObserver!=='undefined')new MutationObserver(render).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();</script>
+<!--claude-mermaid-runtime-end-->
+</body>
+</html>
